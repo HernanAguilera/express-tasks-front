@@ -1,12 +1,31 @@
 "use client";
 import { useState } from "react";
 import { userRegistrationSchema } from "./userRegistration.schema";
-import * as z from "zod";
 
-type RegisterFormData = z.infer<typeof userRegistrationSchema>;
+type RegisterFormData = {
+  name?: {
+    _errors: string[];
+  };
+  email?: {
+    _errors: string[];
+  };
+  password?: {
+    _errors: string[];
+  };
+  confirmPassword?: {
+    _errors: string[];
+  };
+};
+
+enum RegisterFields {
+  name = "name",
+  email = "email",
+  password = "password",
+  confirmPassword = "confirmPassword",
+}
 
 export default function Register() {
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<RegisterFormData>({});
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -17,13 +36,13 @@ export default function Register() {
     });
     const { success, error } = userRegistrationSchema.safeParse(formData);
     if (!success) {
-      setErrors(error.format());
+      setErrors(error.format() as RegisterFormData);
       console.log(error.format());
       return;
     }
   };
 
-  const getErrorMessage = (fieldName: string): string[] => {
+  const getErrorMessage = (fieldName: RegisterFields): string[] => {
     return errors[fieldName]?._errors || [];
   };
 
@@ -43,7 +62,7 @@ export default function Register() {
             className={`form-input ${errors?.name ? "error" : ""}`}
           />
           {errors?.name &&
-            getErrorMessage("name").map((error, index) => (
+            getErrorMessage(RegisterFields.name).map((error, index) => (
               <p key={index} className="text-red-500">
                 {error}
               </p>
@@ -57,7 +76,7 @@ export default function Register() {
             className={`form-input ${errors?.email ? "error" : ""}`}
           />
           {errors?.email &&
-            getErrorMessage("email").map((error, index) => (
+            getErrorMessage(RegisterFields.email).map((error, index) => (
               <span key={index} className="text-red-500">
                 {error}
               </span>
@@ -71,7 +90,7 @@ export default function Register() {
             className={`form-input ${errors?.password ? "error" : ""}`}
           />
           {errors?.password &&
-            getErrorMessage("email").map((error, index) => (
+            getErrorMessage(RegisterFields.password).map((error, index) => (
               <span key={index} className="text-red-500">
                 {error}
               </span>
@@ -85,11 +104,13 @@ export default function Register() {
             className={`form-input ${errors?.confirmPassword ? "error" : ""}`}
           />
           {errors?.confirmPassword &&
-            getErrorMessage("email").map((error, index) => (
-              <span key={index} className="text-red-500">
-                {error}
-              </span>
-            ))}
+            getErrorMessage(RegisterFields.confirmPassword).map(
+              (error, index) => (
+                <span key={index} className="text-red-500">
+                  {error}
+                </span>
+              )
+            )}
         </div>
         <button type="submit" className="w-full button">
           Register
