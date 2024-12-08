@@ -32,6 +32,42 @@ input {
   @apply bg-blue-500 text-white;
 }
 
+.button.secondary {
+  @apply bg-gray-500 text-white;
+}
+
+.button.success {
+  @apply bg-green-500 text-white;
+}
+
+.button.danger {
+  @apply bg-red-500 text-white;
+}
+
+.button.warning {
+  @apply bg-yellow-500 text-white;
+}
+
+.button.info {
+  @apply bg-blue-500 text-white;
+}
+
+.button.light {
+  @apply bg-gray-100 text-gray-900;
+}
+
+.button.dark {
+  @apply bg-gray-800 text-gray-50;
+}
+
+.button.link {
+  @apply bg-transparent text-blue-500;
+}
+
+.button:disabled {
+  @apply bg-gray-300 text-gray-500;
+}
+
 .form-input {
   @apply w-full rounded-md border-2 border-gray-500 p-2 text-gray-900 bg-gray-200;
 }
