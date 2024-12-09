@@ -25,7 +25,7 @@ input {
 }
 
 .button {
-  @apply rounded-md bg-gray-50 p-2 text-gray-900;
+  @apply rounded-md p-2;
 }
 
 .button.primary {
@@ -74,4 +74,17 @@ input {
 
 .form-input.error {
   @apply border-red-500 text-red-500;
+}
+
+
+.pending-task {
+  @apply bg-yellow-400 text-gray-900;
+}
+
+.in-progress-task {
+  @apply bg-blue-400 text-gray-900;
+}
+
+.completed-task {
+  @apply bg-green-400 text-gray-900;
 }

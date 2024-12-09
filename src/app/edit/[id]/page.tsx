@@ -1,19 +1,45 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { taskSchema } from "../Task.schema";
-import { createTask } from "@/http/Task";
-import { redirect } from "next/navigation";
-import Link from "next/link";
+import useTasksStore from "@/app/state/tasks";
+import { taskSchema } from "@/app/Task.schema";
 import { Task, TaskErrorsData, TaskFields } from "@/app/types";
+import { getTask, updateTask } from "@/http/Task";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { use, useEffect, useState } from "react";
 
-export default function Create() {
+export default function Edit({ params }: { params: Promise<{ id: string }> }) {
+  const [id, setId] = useState("");
+  const [task, setTask] = useState<Task>();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-
   const [errors, setErrors] = useState<TaskErrorsData>({});
+  const getErrorMessage = (fieldName: TaskFields): string[] => {
+    return errors[fieldName]?._errors || [];
+  };
+  const { tasks } = useTasksStore();
+  useEffect(() => {
+    params.then((params) => {
+      const task = tasks.find((task: Task) => task.id === Number(params.id));
+      if (task) {
+        setTask(task);
+        setName(task.name);
+        setDescription(task.description);
+        return;
+      }
+      getTask(Number(params.id))
+        .then((task) => {
+          setTask(task);
+          setName(task.name);
+          setDescription(task.description);
+          console.log({ task });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+  }, []);
 
-  const handleCreateTask = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleUpdateTask = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log({ name, description });
 
@@ -27,20 +53,16 @@ export default function Create() {
     }
 
     const newTask: Task = {
+      id: task?.id,
       name,
       description,
-      status: "pending",
     };
-    createTask(newTask).then((task) => {
+    updateTask(newTask).then((task) => {
       console.log({ task });
       setName("");
       setDescription("");
       redirect("/");
     });
-  };
-
-  const getErrorMessage = (fieldName: TaskFields): string[] => {
-    return errors[fieldName]?._errors || [];
   };
 
   return (
@@ -50,9 +72,9 @@ export default function Create() {
           <Link href="/" className="button p-2">
             <i className="bx bx-chevron-left p-2" />
           </Link>
-          <div className="text-3xl font-bold mb-4">New Task</div>
+          <div className="text-3xl font-bold mb-4">Editing</div>
         </div>
-        <form onSubmit={handleCreateTask} className="flex flex-col gap-4">
+        <form onSubmit={handleUpdateTask} className="flex flex-col gap-4">
           <div>
             <input
               type="text"
