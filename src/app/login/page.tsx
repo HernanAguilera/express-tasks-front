@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { userLoginSchema } from "./userLogin.schema";
+import { login, LoginData, TokenData } from "@/http/Auth";
+import { redirect } from "next/navigation";
 
 type LoginErrorsData = {
   email?: {
@@ -19,7 +21,7 @@ enum LoginFields {
 export default function Login() {
   const [errors, setErrors] = useState<LoginErrorsData>({});
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setErrors(() => ({}));
@@ -32,6 +34,11 @@ export default function Login() {
       setErrors(error.format() as LoginErrorsData);
       return;
     }
+
+    const response = await login(data as LoginData);
+    console.log(response as TokenData);
+    localStorage.setItem("token", response.token);
+    redirect("/");
   };
 
   const getErrorMessage = (fieldName: LoginFields): string[] => {

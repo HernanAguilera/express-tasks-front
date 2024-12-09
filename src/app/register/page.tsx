@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { userRegistrationSchema } from "./userRegistration.schema";
+import { register, RegisterData } from "@/http/Auth";
+import { redirect } from "next/navigation";
 
 type RegisterFormData = {
   name?: {
@@ -26,20 +28,30 @@ enum RegisterFields {
 
 export default function Register() {
   const [errors, setErrors] = useState<RegisterFormData>({});
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData);
     console.log({
       currentTarget: e.currentTarget,
       formData: formData.getAll("name"),
     });
-    const { success, error } = userRegistrationSchema.safeParse(formData);
+    const { success, error } = userRegistrationSchema.safeParse(data);
     if (!success) {
       setErrors(error.format() as RegisterFormData);
       console.log(error.format());
       return;
     }
+
+    const response = await register(data as RegisterData);
+    console.log(response);
+    // revalidatePath("/login");
+    redirect("/login");
+    // try {
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   const getErrorMessage = (fieldName: RegisterFields): string[] => {
