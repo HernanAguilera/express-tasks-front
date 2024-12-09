@@ -36,27 +36,7 @@ export default function Home() {
 
   const sortTasks = (tasks: Task[]) => {
     const sortedTasks = [...tasks];
-    sortedTasks.sort((a, b) => {
-      if (a.status === "pending" && b.status !== "pending") {
-        return -1;
-      }
-      if (a.status !== "pending" && b.status === "pending") {
-        return 1;
-      }
-      if (a.status === "in progress" && b.status !== "in progress") {
-        return -1;
-      }
-      if (a.status !== "in progress" && b.status === "in progress") {
-        return 1;
-      }
-      if (a.status === "completed" && b.status !== "completed") {
-        return -1;
-      }
-      if (a.status !== "completed" && b.status === "completed") {
-        return 1;
-      }
-      return 0;
-    });
+    sortedTasks.sort((a, b) => ((a as any).id > (b as any).id ? 1 : -1));
     return sortedTasks;
   };
 
@@ -98,28 +78,13 @@ export default function Home() {
   };
 
   const handleDeleteTask = (task: Task) => {
-    deleteTask(task).then((res) => {
-      console.log({ res });
-      getAllTasks()
-        .then((tasks) => setTasks(tasks.filter((t: Task) => t.id !== task.id)))
-        .finally(() => {
-          // setDeletedTasks((tasks) => [...tasks, task]);
-        });
-    });
+    if (confirm("Are you sure you want to delete this task?")) {
+      deleteTask(task).then((res) => {
+        console.log({ res });
+        getAllTasks().then((tasks) => updateTasksLists(tasks));
+      });
+    }
   };
-
-  // const getTaskClassName = (task: Task) => {
-  //   switch (task.status) {
-  //     case "pending":
-  //       return "pending-task";
-  //     case "in progress":
-  //       return "in-progress-task";
-  //     case "completed":
-  //       return "completed-task";
-  //     default:
-  //       return "";
-  //   }
-  // };
 
   return (
     <ClientSideWrapper>
@@ -127,7 +92,7 @@ export default function Home() {
         <div className="flex flex-col gap-4 w-11/12 sm:w-8/12 md:w-1/2 lg:w-1/2 xl:w-1/3">
           <div className="flex flex-row justify-between">
             <div className="text-3xl font-bold mb-4">Tasks</div>
-            <Link href="/create" className="button p-2">
+            <Link href="/create" className="button light p-2">
               <i className="bx bx-plus p-2" />
             </Link>
           </div>

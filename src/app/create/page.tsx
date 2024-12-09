@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Task, TaskErrorsData, TaskFields } from "@/app/types";
 import ClientSideWrapper from "../components/ClientSideWrapper";
-import { notifyError, notifySuccess } from "../utils/notifications";
+import { notifySuccess } from "../utils/notifications";
 
 export default function Create() {
   const [name, setName] = useState("");
@@ -17,7 +17,6 @@ export default function Create() {
 
   const handleCreateTask = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log({ name, description });
 
     setErrors(() => ({}));
     const { success, error } = taskSchema.safeParse({ name, description });
@@ -34,7 +33,6 @@ export default function Create() {
       status: "pending",
     };
     createTask(newTask).then((task) => {
-      console.log({ task });
       notifySuccess("Task created successfully");
       setName("");
       setDescription("");
@@ -51,7 +49,7 @@ export default function Create() {
       <div className="flex flex-col items-center h-screen mt-12">
         <div className="flex flex-col gap-4 w-11/12 sm:w-8/12 md:w-1/2 lg:w-1/2 xl:w-1/3">
           <div className="flex flex-row justify-between">
-            <Link href="/" className="button p-2">
+            <Link href="/" className="button light p-2">
               <i className="bx bx-chevron-left p-2" />
             </Link>
             <div className="text-3xl font-bold mb-4">New Task</div>
@@ -92,7 +90,7 @@ export default function Create() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="button primary flex items-center gap-2 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 justify-center"
+                className="button info flex items-center gap-2 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 justify-center"
               >
                 Save <i className="bx bx-save" />
               </button>

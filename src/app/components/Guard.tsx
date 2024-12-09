@@ -13,12 +13,12 @@ export default function Guard() {
   useEffect(() => {
     console.log({ pathname, isAuthenticated: isAuthenticated() });
     if (guestPaths.includes(pathname) && isAuthenticated()) {
-      console.log("redirecting... /login");
-      redirect("/login");
-    }
-    if (protectedPaths.includes(pathname) && !isAuthenticated()) {
       console.log("redirecting... /");
       redirect("/");
+    }
+    if (protectedPaths.includes(pathname) && !isAuthenticated()) {
+      console.log("redirecting... /login");
+      redirect("/login");
     }
   }, []);
   return <></>;

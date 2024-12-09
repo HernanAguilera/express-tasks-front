@@ -1,4 +1,3 @@
-import { useAuthStore } from "@/app/state/auth";
 import { Task } from "@/app/types";
 import { protectedHttp } from "./Http";
 
@@ -27,52 +26,25 @@ export const getTask = async (id: number) => {
 };
 
 export const deleteTask = async (task: Task) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return Promise.reject("No token found");
-  }
-  const response = await fetch(`${baseUrl}/${task.id}`, {
+  const data = await protectedHttp(`${baseUrl}/${task.id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(task),
   });
-  const data = await response.json();
   return data;
 };
 
 export const updateTask = async (task: Task) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return Promise.reject("No token found");
-  }
-  const response = await fetch(`${baseUrl}/${task.id}`, {
+  const data = await protectedHttp(`${baseUrl}/${task.id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(task),
   });
-  const data = await response.json();
   return data;
 };
 
 export const updateTaskStatus = async (task: Task, status: string) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return Promise.reject("No token found");
-  }
-  const response = await fetch(`${baseUrl}/${task.id}`, {
+  const data = await protectedHttp(`${baseUrl}/${task.id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify({ ...task, status }),
   });
-  const data = await response.json();
   return data;
 };

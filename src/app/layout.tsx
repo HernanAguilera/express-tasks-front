@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import "./globals.css";
 import "../../node_modules/boxicons/css/boxicons.min.css";
+import Nabar from "./components/NabBar";
 
 const DroidSans = localFont({
   src: "./fonts/DroidSans.ttf",
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body
         className={`${DroidSans.variable} ${DroidSansBold.variable} antialiased`}
       >
+        <Nabar />
         {children}
       </body>
     </html>

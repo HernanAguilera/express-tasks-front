@@ -1,3 +1,5 @@
+import { publicHttp } from "./Http";
+
 export type TokenData = {
   token: string;
 };
@@ -17,25 +19,17 @@ export type RegisterData = {
 const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}`;
 
 export const login = async (user: LoginData) => {
-  const response = await fetch(`${baseUrl}/login`, {
+  const data = await publicHttp(`${baseUrl}/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(user),
   });
-  const data = await response.json();
   return data;
 };
 
 export const register = async (user: RegisterData) => {
-  const response = await fetch(`${baseUrl}/register`, {
+  const data = await publicHttp(`${baseUrl}/register`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(user),
   });
-  const data = await response.json();
   return data;
 };

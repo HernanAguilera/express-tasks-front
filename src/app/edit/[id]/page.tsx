@@ -84,7 +84,7 @@ export default function Edit({ params }: { params: Promise<{ id: string }> }) {
       <div className="flex flex-col items-center h-screen mt-12">
         <div className="flex flex-col gap-4 w-11/12 sm:w-8/12 md:w-1/2 lg:w-1/2 xl:w-1/3">
           <div className="flex flex-row justify-between">
-            <Link href="/" className="button p-2">
+            <Link href="/" className="button light p-2">
               <i className="bx bx-chevron-left p-2" />
             </Link>
             <div className="text-3xl font-bold mb-4">Editing</div>
