@@ -6,6 +6,8 @@ import { createTask } from "@/http/Task";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Task, TaskErrorsData, TaskFields } from "@/app/types";
+import ClientSideWrapper from "../components/ClientSideWrapper";
+import { notifyError, notifySuccess } from "../utils/notifications";
 
 export default function Create() {
   const [name, setName] = useState("");
@@ -33,6 +35,7 @@ export default function Create() {
     };
     createTask(newTask).then((task) => {
       console.log({ task });
+      notifySuccess("Task created successfully");
       setName("");
       setDescription("");
       redirect("/");
@@ -44,57 +47,59 @@ export default function Create() {
   };
 
   return (
-    <div className="flex flex-col items-center h-screen mt-12">
-      <div className="flex flex-col gap-4 w-11/12 sm:w-8/12 md:w-1/2 lg:w-1/2 xl:w-1/3">
-        <div className="flex flex-row justify-between">
-          <Link href="/" className="button p-2">
-            <i className="bx bx-chevron-left p-2" />
-          </Link>
-          <div className="text-3xl font-bold mb-4">New Task</div>
+    <ClientSideWrapper>
+      <div className="flex flex-col items-center h-screen mt-12">
+        <div className="flex flex-col gap-4 w-11/12 sm:w-8/12 md:w-1/2 lg:w-1/2 xl:w-1/3">
+          <div className="flex flex-row justify-between">
+            <Link href="/" className="button p-2">
+              <i className="bx bx-chevron-left p-2" />
+            </Link>
+            <div className="text-3xl font-bold mb-4">New Task</div>
+          </div>
+          <form onSubmit={handleCreateTask} className="flex flex-col gap-4">
+            <div>
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                className="w-full form-input"
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+              />
+              {errors?.name &&
+                getErrorMessage(TaskFields.name).map((error, index) => (
+                  <p key={index} className="text-red-500">
+                    {error}
+                  </p>
+                ))}
+            </div>
+            <div>
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                className="w-full form-input"
+                onChange={(e) => setDescription(e.target.value)}
+                value={description}
+              />
+              {errors?.description &&
+                getErrorMessage(TaskFields.description).map((error, index) => (
+                  <p key={index} className="text-red-500">
+                    {error}
+                  </p>
+                ))}
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="button primary flex items-center gap-2 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 justify-center"
+              >
+                Save <i className="bx bx-save" />
+              </button>
+            </div>
+          </form>
         </div>
-        <form onSubmit={handleCreateTask} className="flex flex-col gap-4">
-          <div>
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              className="w-full form-input"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-            />
-            {errors?.name &&
-              getErrorMessage(TaskFields.name).map((error, index) => (
-                <p key={index} className="text-red-500">
-                  {error}
-                </p>
-              ))}
-          </div>
-          <div>
-            <input
-              type="text"
-              name="description"
-              placeholder="Description"
-              className="w-full form-input"
-              onChange={(e) => setDescription(e.target.value)}
-              value={description}
-            />
-            {errors?.description &&
-              getErrorMessage(TaskFields.description).map((error, index) => (
-                <p key={index} className="text-red-500">
-                  {error}
-                </p>
-              ))}
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="button primary flex items-center gap-2 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 justify-center"
-            >
-              Save <i className="bx bx-save" />
-            </button>
-          </div>
-        </form>
       </div>
-    </div>
+    </ClientSideWrapper>
   );
 }

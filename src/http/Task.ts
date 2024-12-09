@@ -1,65 +1,28 @@
 import { useAuthStore } from "@/app/state/auth";
 import { Task } from "@/app/types";
+import { protectedHttp } from "./Http";
 
 const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/tasks`;
-console.log({ baseUrl });
 
 export const getAllTasks = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return [];
-  }
-  try {
-    const response = await fetch(baseUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      return Promise.reject({
-        error: "Something went wrong",
-        code: response.status,
-      });
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.log({ error });
-  }
+  const data = await protectedHttp(baseUrl, {
+    method: "GET",
+  });
+  return data;
 };
 
 export const createTask = async (task: Task) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return Promise.reject("No token found");
-  }
-  const response = await fetch(baseUrl, {
+  const data = await protectedHttp(baseUrl, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(task),
   });
-  const data = await response.json();
   return data;
 };
 
 export const getTask = async (id: number) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return Promise.reject("No token found");
-  }
-  const response = await fetch(`${baseUrl}/${id}`, {
+  const data = await protectedHttp(`${baseUrl}/${id}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
   });
-  const data = await response.json();
   return data;
 };
 

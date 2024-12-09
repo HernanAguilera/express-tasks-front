@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { createStore } from "zustand/vanilla";
 
 export interface AuthState {
   token: string;
@@ -9,7 +9,7 @@ export interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = createStore<AuthState>((set, get) => ({
   token: "",
   setToken: (token: string) => {
     set({ token });

@@ -1,12 +1,15 @@
 "use client";
+import ClientSideWrapper from "@/app/components/ClientSideWrapper";
 import { useAuthStore } from "@/app/state/auth";
 import useTasksStore from "@/app/state/tasks";
 import { taskSchema } from "@/app/Task.schema";
 import { Task, TaskErrorsData, TaskFields } from "@/app/types";
+import { notifyError, notifySuccess } from "@/app/utils/notifications";
 import { getTask, updateTask } from "@/http/Task";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { use, useEffect, useState } from "react";
+import { useStore } from "zustand";
 
 export default function Edit({ params }: { params: Promise<{ id: string }> }) {
   const [id, setId] = useState("");
@@ -18,7 +21,7 @@ export default function Edit({ params }: { params: Promise<{ id: string }> }) {
     return errors[fieldName]?._errors || [];
   };
   const { tasks } = useTasksStore();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useStore(useAuthStore);
   useEffect(() => {
     console.log({
       is: isAuthenticated() ? "authenticated" : "not authenticated",
@@ -69,6 +72,7 @@ export default function Edit({ params }: { params: Promise<{ id: string }> }) {
     };
     updateTask(newTask).then((task) => {
       console.log({ task });
+      notifySuccess("Task updated successfully");
       setName("");
       setDescription("");
       redirect("/");
@@ -76,57 +80,59 @@ export default function Edit({ params }: { params: Promise<{ id: string }> }) {
   };
 
   return (
-    <div className="flex flex-col items-center h-screen mt-12">
-      <div className="flex flex-col gap-4 w-11/12 sm:w-8/12 md:w-1/2 lg:w-1/2 xl:w-1/3">
-        <div className="flex flex-row justify-between">
-          <Link href="/" className="button p-2">
-            <i className="bx bx-chevron-left p-2" />
-          </Link>
-          <div className="text-3xl font-bold mb-4">Editing</div>
+    <ClientSideWrapper>
+      <div className="flex flex-col items-center h-screen mt-12">
+        <div className="flex flex-col gap-4 w-11/12 sm:w-8/12 md:w-1/2 lg:w-1/2 xl:w-1/3">
+          <div className="flex flex-row justify-between">
+            <Link href="/" className="button p-2">
+              <i className="bx bx-chevron-left p-2" />
+            </Link>
+            <div className="text-3xl font-bold mb-4">Editing</div>
+          </div>
+          <form onSubmit={handleUpdateTask} className="flex flex-col gap-4">
+            <div>
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                className="w-full form-input"
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+              />
+              {errors?.name &&
+                getErrorMessage(TaskFields.name).map((error, index) => (
+                  <p key={index} className="text-red-500">
+                    {error}
+                  </p>
+                ))}
+            </div>
+            <div>
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                className="w-full form-input"
+                onChange={(e) => setDescription(e.target.value)}
+                value={description}
+              />
+              {errors?.description &&
+                getErrorMessage(TaskFields.description).map((error, index) => (
+                  <p key={index} className="text-red-500">
+                    {error}
+                  </p>
+                ))}
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="button primary flex items-center gap-2 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 justify-center"
+              >
+                Save <i className="bx bx-save" />
+              </button>
+            </div>
+          </form>
         </div>
-        <form onSubmit={handleUpdateTask} className="flex flex-col gap-4">
-          <div>
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              className="w-full form-input"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-            />
-            {errors?.name &&
-              getErrorMessage(TaskFields.name).map((error, index) => (
-                <p key={index} className="text-red-500">
-                  {error}
-                </p>
-              ))}
-          </div>
-          <div>
-            <input
-              type="text"
-              name="description"
-              placeholder="Description"
-              className="w-full form-input"
-              onChange={(e) => setDescription(e.target.value)}
-              value={description}
-            />
-            {errors?.description &&
-              getErrorMessage(TaskFields.description).map((error, index) => (
-                <p key={index} className="text-red-500">
-                  {error}
-                </p>
-              ))}
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="button primary flex items-center gap-2 w-full md:w-1/2 lg:w-1/3 xl:w-1/4 justify-center"
-            >
-              Save <i className="bx bx-save" />
-            </button>
-          </div>
-        </form>
       </div>
-    </div>
+    </ClientSideWrapper>
   );
 }

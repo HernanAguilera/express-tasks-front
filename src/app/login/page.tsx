@@ -1,9 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { userLoginSchema } from "./userLogin.schema";
 import { login, LoginData, TokenData } from "@/http/Auth";
 import { redirect } from "next/navigation";
 import { useAuthStore } from "../state/auth";
+import { notifyError, notifySuccess } from "../utils/notifications";
+import { ToastContainer } from "react-toastify";
+import { useStore } from "zustand";
 
 type LoginErrorsData = {
   email?: {
@@ -21,13 +24,7 @@ enum LoginFields {
 
 export default function Login() {
   const [errors, setErrors] = useState<LoginErrorsData>({});
-  const { login: loginUser, isAuthenticated } = useAuthStore();
-
-  useEffect(() => {
-    if (isAuthenticated()) {
-      redirect("/");
-    }
-  }, []);
+  const { login: loginUser } = useStore(useAuthStore);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,7 +33,6 @@ export default function Login() {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData);
     const { success, error } = userLoginSchema.safeParse(data);
-    console.log({ data, success, error: error?.format() });
 
     if (!success) {
       setErrors(error.format() as LoginErrorsData);
@@ -44,9 +40,12 @@ export default function Login() {
     }
 
     const response = await login(data as LoginData);
-    console.log(response as TokenData);
-    localStorage.setItem("token", response.token);
+    if (!response.token) {
+      notifyError("Invalid credentials");
+      return;
+    }
     loginUser(response.token);
+    notifySuccess("Login successful");
     redirect("/");
   };
 
@@ -89,10 +88,11 @@ export default function Login() {
               </p>
             ))}
         </div>
-        <button type="submit" className="w-full button">
+        <button type="submit" className="w-full button light">
           Login
         </button>
       </form>
+      <ToastContainer />
     </div>
   );
 }

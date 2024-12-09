@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import "react-toastify/dist/ReactToastify.css";
+
 import "./globals.css";
 import "../../node_modules/boxicons/css/boxicons.min.css";
 
