@@ -64,6 +64,38 @@ input {
   @apply bg-transparent text-blue-500;
 }
 
+.button.primary.outline {
+  @apply bg-transparent text-blue-500 border-blue-500;
+}
+
+.button.secondary.outline {
+  @apply bg-transparent text-gray-500 border-gray-500;
+}
+
+.button.success.outline {
+  @apply bg-transparent text-green-500 border-green-500;
+}
+
+.button.danger.outline {
+  @apply bg-transparent text-red-500 border-red-500;
+}
+
+.button.warning.outline {
+  @apply bg-transparent text-yellow-500 border-yellow-500;
+}
+
+.button.info.outline {
+  @apply bg-transparent text-blue-500 border-blue-500;
+}
+
+.button.light.outline {
+  @apply bg-transparent text-gray-100 border-gray-100;
+}
+
+.button.dark.outline {
+  @apply bg-transparent text-gray-800 border-gray-800;
+} x
+
 .button:disabled {
   @apply bg-gray-300 text-gray-500;
 }

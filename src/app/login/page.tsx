@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { userLoginSchema } from "./userLogin.schema";
 import { login, LoginData, TokenData } from "@/http/Auth";
 import { redirect } from "next/navigation";
+import { useAuthStore } from "../state/auth";
 
 type LoginErrorsData = {
   email?: {
@@ -20,6 +21,13 @@ enum LoginFields {
 
 export default function Login() {
   const [errors, setErrors] = useState<LoginErrorsData>({});
+  const { login: loginUser, isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      redirect("/");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,6 +46,7 @@ export default function Login() {
     const response = await login(data as LoginData);
     console.log(response as TokenData);
     localStorage.setItem("token", response.token);
+    loginUser(response.token);
     redirect("/");
   };
 

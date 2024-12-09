@@ -5,22 +5,35 @@ import { getAllTasks, updateTaskStatus, deleteTask } from "@/http/Task";
 import Link from "next/link";
 import { Task } from "./types";
 import useTasksStore from "./state/tasks";
+import { useAuthStore } from "./state/auth";
+import { redirect } from "next/navigation";
 
 export default function Home() {
   const [filter, setFilter] = useState("");
   const [tasksFiltered, setTasksFiltered] = useState<Task[]>([]);
-  const [tasksPending, setTasksPending] = useState<Task[]>([]);
-  const [tasksInProgress, setTasksInProgress] = useState<Task[]>([]);
-  const [tasksCompleted, setTasksCompleted] = useState<Task[]>([]);
 
   const { tasks, setTasks } = useTasksStore();
+
+  const { isAuthenticated, logout } = useAuthStore();
 
   console.log({ tasks });
 
   useEffect(() => {
-    getAllTasks().then((tasks) => {
-      updateTasksLists(tasks);
-    });
+    if (!isAuthenticated()) {
+      redirect("/login");
+    }
+    getAllTasks()
+      .then((tasks) => {
+        updateTasksLists(tasks);
+      })
+      .catch((error) => {
+        console.log({ error });
+        if (error.code === 401) {
+          logout();
+          redirect("/login");
+          return;
+        }
+      });
   }, []);
 
   const sortTasks = (tasks: Task[]) => {
@@ -168,12 +181,12 @@ export default function Home() {
                 </div>
                 <Link
                   href={`/edit/${task.id}`}
-                  className="button info w-2/12 flex items-center justify-center"
+                  className="button info outline w-2/12 flex items-center justify-center"
                 >
                   <i className="bx bx-edit" />
                 </Link>
                 <button
-                  className="button danger w-2/12"
+                  className="button danger outline w-2/12"
                   onClick={() => handleDeleteTask(task)}
                 >
                   <i className="bx bx-trash" />

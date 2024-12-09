@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/app/state/auth";
 import { Task } from "@/app/types";
 
 const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/tasks`;
@@ -16,10 +17,16 @@ export const getAllTasks = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (!response.ok) {
+      return Promise.reject({
+        error: "Something went wrong",
+        code: response.status,
+      });
+    }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log(error);
+    console.log({ error });
   }
 };
 

@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { userRegistrationSchema } from "./userRegistration.schema";
 import { register, RegisterData } from "@/http/Auth";
 import { redirect } from "next/navigation";
+import { useAuthStore } from "../state/auth";
 
 type RegisterFormData = {
   name?: {
@@ -28,6 +29,14 @@ enum RegisterFields {
 
 export default function Register() {
   const [errors, setErrors] = useState<RegisterFormData>({});
+  const { isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      redirect("/");
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

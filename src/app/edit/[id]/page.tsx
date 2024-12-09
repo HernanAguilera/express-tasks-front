@@ -1,4 +1,5 @@
 "use client";
+import { useAuthStore } from "@/app/state/auth";
 import useTasksStore from "@/app/state/tasks";
 import { taskSchema } from "@/app/Task.schema";
 import { Task, TaskErrorsData, TaskFields } from "@/app/types";
@@ -17,7 +18,16 @@ export default function Edit({ params }: { params: Promise<{ id: string }> }) {
     return errors[fieldName]?._errors || [];
   };
   const { tasks } = useTasksStore();
+  const { isAuthenticated } = useAuthStore();
   useEffect(() => {
+    console.log({
+      is: isAuthenticated() ? "authenticated" : "not authenticated",
+    });
+    if (!isAuthenticated()) {
+      console.log("redirecting...");
+      redirect("/login");
+      return;
+    }
     params.then((params) => {
       const task = tasks.find((task: Task) => task.id === Number(params.id));
       if (task) {
